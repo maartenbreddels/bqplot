@@ -22,6 +22,8 @@ import * as popperreference from './PopperReference';
 import popper from 'popper.js';
 import * as THREE from 'three';
 import { WidgetView } from '@jupyter-widgets/base';
+import * as kiwi from 'kiwi.js';
+
 
 THREE.ShaderChunk['scales'] = require('raw-loader!../shaders/scales.glsl').default;
 
@@ -64,21 +66,49 @@ class Figure extends widgets.DOMWidgetView {
 
     protected getFigureSize (): IFigureSize {
         const figureSize: IFigureSize = this.el.getBoundingClientRect();
-        const clientRectRatio = figureSize.width / figureSize.height;
 
-        const minRatio: number = this.model.get('min_aspect_ratio');
-        const maxRatio: number = this.model.get('max_aspect_ratio');
+        let solver = new kiwi.Solver();
+        var width = new kiwi.Variable();
+        var height = new kiwi.Variable();
+        solver.addEditVariable(width, kiwi.Strength.strong);
+        solver.addEditVariable(height, kiwi.Strength.strong);
+        solver.suggestValue(width, figureSize.width);
+        solver.suggestValue(height, figureSize.height);
 
-        if (clientRectRatio < minRatio) {
-            // Too much vertical space: Keep horizontal space but compute height from min aspect ratio
-            figureSize.height = figureSize.width / minRatio;
-        }
-        else if (clientRectRatio > maxRatio) {
-            // Too much horizontal space: Keep vertical space but compute width from max aspect ratio
-            figureSize.width = figureSize.height * maxRatio;
-        }
+        /*
+         We want the figure size to always be inside the dom element:
+           width <= figureSize.width
+           width - figureSize.width < 0
+         and similarly for the height
+         If we don't add these constraints, the width and height might actually grow
+        */
+        solver.addConstraint(new kiwi.Constraint(new kiwi.Expression(width, -figureSize.width), kiwi.Operator.Le));
+        solver.addConstraint(new kiwi.Constraint(new kiwi.Expression(height, -figureSize.height), kiwi.Operator.Le));
 
-        return figureSize;
+        /*
+         Definition of aspect ratio: aspect_ratio == width/height
+         min_aspect_ratio leads to the constrain:
+            width/height >= min_aspect_ratio
+            width >= min_aspect_ratio*height
+            width - min_aspect_ratio*height >= 0
+            -width + min_aspect_ratio*height <= 0
+         max_aspect_ratio leads to the constrain:
+            width/height <= max_aspect_ratio
+            width <= max_aspect_ratio*height
+            width - max_aspect_ratio*height <= 0
+            -width + max_aspect_ratio*height >= 0
+        */
+        /*
+         Useful resources
+          https://github.com/IjzerenHein/kiwi.js/blob/master/docs/Kiwi.md
+          https://github.com/IjzerenHein/kiwi.js/blob/master/docs/Kiwi.md#module_kiwi..Expression
+        */
+        solver.addConstraint(new kiwi.Constraint(new kiwi.Expression([-1, width], [this.model.get('min_aspect_ratio'), height]), kiwi.Operator.Le));
+        solver.addConstraint(new kiwi.Constraint(new kiwi.Expression([-1, width], [this.model.get('max_aspect_ratio'), height]), kiwi.Operator.Ge));
+
+        // Solve the constraints
+        solver.updateVariables();
+        return {width: width.value(), height: height.value()};
     }
 
     render () {
