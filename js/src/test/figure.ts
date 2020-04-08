@@ -119,7 +119,7 @@ describe("figure >", () => {
         // expect(x).to.be.greaterThan(0);
         // expect(y).to.be.greaterThan(0);
 
-        figure.decorators.bottom.push({padding: () => 11});
+        figure.decorators.bottom.push({calculateAutoSize: () => 11, setAutoOffset: (x) => null});
         ({width, height, x, y} = figure.getFigureSize());
         // expect(x).to.be.greaterThan((400-250)/2);
         expect(y).to.be.equal(fontHeight);
@@ -131,7 +131,7 @@ describe("figure >", () => {
         expect(height).to.be.equal(500-11);
 
         // make the bottom decorators take the same space as the title
-        figure.decorators.bottom.push({padding: () => fontHeight-11});
+        figure.decorators.bottom.push({calculateAutoSize: () => fontHeight-11, setAutoOffset: (x) => null});
         figure.model.set('title', 'i should fit above');
         figure.model.set('max_aspect_ratio', 2);
         figure.model.set('min_aspect_ratio', 2);

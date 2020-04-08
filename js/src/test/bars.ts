@@ -23,7 +23,7 @@ describe("bars >", () => {
 
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var heights = bars.d3el.selectAll(".bargroup rect.bar").nodes().map((el) => Number(el.getAttribute('height')));
-        var height = objects.figure.plotarea_height;
+        var height = objects.figure.height;
         expect(heights).to.deep.equal([height*2/3, height]);
     });
 
@@ -54,7 +54,7 @@ describe("bars >", () => {
 
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var heights = bars.d3el.selectAll(".bargroup rect.bar").nodes().map((el) => Math.round(Number(el.getAttribute('height'))));
-        var height = objects.figure.plotarea_height;
+        var height = objects.figure.height;
         var h0 = Math.round(height*2/3);
         var h2 = Math.round(height);
         var h3 = Math.round(height*2.5/3);
@@ -89,7 +89,7 @@ describe("bars >", () => {
 
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var heights = bars.d3el.selectAll(".bargroup rect.bar").nodes().map((el) => Math.round(Number(el.getAttribute('height'))));
-        var height = objects.figure.plotarea_height;
+        var height = objects.figure.height;
         var h0 = Math.round(height*2/3);
         var h2 = Math.round(height);
         var h3 = Math.round(height*2.5/3);

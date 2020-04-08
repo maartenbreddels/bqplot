@@ -432,7 +432,7 @@ export class Lines extends Mark {
 
         this.area.defined(function(d) { return area && d.y !== null && isFinite(y_scale.scale(d.y)); });
         if (fill == "bottom") {
-            this.area.y0(this.parent.plotarea_height);
+            this.area.y0(this.parent.height);
         } else if (fill == "top") {
             this.area.y0(0)
         } else if (fill == "between") {
@@ -485,7 +485,7 @@ export class Lines extends Mark {
           .y1(function(d) { return y_scale.scale(d.y) + y_scale.offset; })
 
         if (fill == "bottom") {
-            this.area.y0(this.parent.plotarea_height);
+            this.area.y0(this.parent.height);
         } else if (fill == "top") {
             this.area.y0(0)
         } else if (fill == "between") {

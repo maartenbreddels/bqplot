@@ -187,7 +187,7 @@ export class Bars extends Mark {
         if (orient === "vertical") {
             this.d3el.select(".zeroLine")
                 .attr("x1", 0)
-                .attr("x2", this.parent.plotarea_width)
+                .attr("x2", this.parent.width)
                 .attr("y1", range_scale.scale(this.model.base_value))
                 .attr("y2", range_scale.scale(this.model.base_value));
         } else {
@@ -195,7 +195,7 @@ export class Bars extends Mark {
                 .attr("x1", range_scale.scale(this.model.base_value))
                 .attr("x2", range_scale.scale(this.model.base_value))
                 .attr("y1", 0)
-                .attr("y2", this.parent.plotarea_height);
+                .attr("y2", this.parent.height);
         }
     }
 
@@ -941,7 +941,7 @@ export class Bars extends Mark {
         const dom_scale = this.dom_scale;
         const orient = this.model.get("orientation");
         let x_padding = 0;
-        const avail_space = (orient === "vertical") ? this.parent.plotarea_width : this.parent.plotarea_height;
+        const avail_space = (orient === "vertical") ? this.parent.width : this.parent.height;
         if (dom_scale) {
             if (this.x !== null && this.x !== undefined &&
                 this.x.domain().length !== 0) {

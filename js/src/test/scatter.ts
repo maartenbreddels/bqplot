@@ -33,8 +33,8 @@ describe("scatter >", () => {
 
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var transforms = scatter.d3el.selectAll(".object_grp").nodes().map((el) => el.getAttribute('transform'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(transforms).to.deep.equal([`translate(0, ${height})`, `translate(${width}, 0)`]);
     });
 

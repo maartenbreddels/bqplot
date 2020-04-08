@@ -25,8 +25,8 @@ describe("lines >", () => {
         lines.update_line_xy();
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var paths = lines.d3el.selectAll(".curve path.line").nodes().map((el) => el.getAttribute('d'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(paths).to.deep.equal([`M${width*1/4},${height}L${width*3/4},0`]);
     });
 
@@ -44,8 +44,8 @@ describe("lines >", () => {
         lines.update_line_xy();
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var paths = lines.d3el.selectAll(".curve path.line").nodes().map((el) => el.getAttribute('d'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(paths).to.deep.equal([`M0,${height}L${width},0`]);
     });
 
@@ -74,8 +74,8 @@ describe("lines >", () => {
         lines.update_line_xy();
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var paths = lines.d3el.selectAll(".curve path.line").nodes().map((el) => el.getAttribute('d'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(paths).to.deep.equal([`M0,${height}L${width/2},${height}L${width},0`, `M${width/2},${height}L${width/2},${height/2}L${width},0`]);
     });
 
@@ -104,8 +104,8 @@ describe("lines >", () => {
         lines.update_line_xy();
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var paths = lines.d3el.selectAll(".curve path.line").nodes().map((el) => el.getAttribute('d'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(paths).to.deep.equal([`M0,${height}L${width/2},${height}L${width},0`, `M${width/2},${height}L${width/2},${height/2}L${width},0`]);
     });
 
@@ -134,8 +134,8 @@ describe("lines >", () => {
         lines.update_line_xy();
         d3Timer.timerFlush(); // this makes sure the animations are all executed
         var paths = lines.d3el.selectAll(".curve path.line").nodes().map((el) => el.getAttribute('d'));
-        var width = objects.figure.plotarea_width;
-        var height = objects.figure.plotarea_height;
+        var width = objects.figure.width;
+        var height = objects.figure.height;
         expect(paths).to.deep.equal([`M0,${height}L${width/2},${height}L${width},0`, `M0,${height}L${width/2},${height/2}L${width},0`]);
     });
 });

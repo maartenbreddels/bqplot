@@ -370,10 +370,12 @@ export class Axis extends WidgetView {
         const is_vertical = this.model.get("orientation") === "vertical";
         const side = this.model.get("side");
 
+        // this transform is only used when offset is not used, so this will
+        // transform only for the auto layout case
         if (is_vertical){
-            return (side === "right") ? this.width : 0;
+            return (side === "right") ? this.width + this.autoOffset : -this.autoOffset;
         } else {
-            return (side === "top") ? 0 : this.height;
+            return (side === "top") ? -this.autoOffset : this.height + this.autoOffset;
         }
     }
 
@@ -487,7 +489,7 @@ export class Axis extends WidgetView {
             .styles(this.get_text_styling());
     }
 
-    update_label_offset(model, offset) {
+    update_label_offset() {
         this.label_offset = this.calculate_label_offset();
         this.g_axisline.select("text.axislabel")
           .attr("y", this.label_offset);
@@ -893,27 +895,57 @@ export class Axis extends WidgetView {
     }
 
     get width() : number {
-        return this.parent.width - this.parent.margin.right - this.parent.margin.left;
+        return this.parent.width;
     }
 
     get height() : number {
-        return this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
+        return this.parent.height;
     }
 
-    get margin() {
-        return this.parent.margin;
+    calculateAutoSize() {
+        // if offset is used, we don't take up any auto layout space
+        if(this.offset_value !== undefined) {
+            return 0;
+        } else {
+            const box = this.getBBox();
+            const side = this.model.get('side');
+            if ((side == 'left') || (side == 'right')) {
+                return box.width;
+            }
+            if ((side == 'bottom') || (side == 'top')) {
+                return box.height;
+            }
+        }
     }
 
-    calculateLabelHeight() {
+    getBBox() : DOMRect {
+        // to get the bounding box, we don't want to include the gridlines, so we disable them
+        const tickSize = this.axis.tickSize();
+        this.axis.tickSize(6); // magic number 6 is used above as well
+        this.g_axisline.call(this.axis);
+        // we also don't use the label if the label_offset is negative
+        const negativeLabelOffset = this.model.get('label_offset') && this.model.get('label_offset').length ? this.model.get('label_offset')[0] == '-' : false;
+        if (negativeLabelOffset) {
+            this.g_axisline.select("text.axislabel").style('display', 'none')
+        }
         // note that we use getBoundingClientRect to take into account transformations (such as rotations)
-        const labelHeights = this.d3el.selectAll('.tick text').nodes().map((el) => el.getBoundingClientRect().height);
-        return d3.max(labelHeights) + this.g_axisline.select("text.axislabel").node().getBoundingClientRect().height;
-    }
-    calculateLabelWidth() {
-        const labelWidths = this.d3el.selectAll('.tick text').nodes().map((el) => el.getBoundingClientRect().width);
-        return d3.max(labelWidths) + this.g_axisline.select("text.axislabel").node().getBoundingClientRect().width;
+        const box = this.d3el.node().getBoundingClientRect();
+        // and restore the gridlines
+        this.axis.tickSize(tickSize);
+        this.g_axisline.call(this.axis);
+        // and restore label
+        if (negativeLabelOffset) {
+            this.g_axisline.select("text.axislabel").style('display', '')
+        }
+        return box;
+
     }
 
+    setAutoOffset(autoOffset) {
+        this.autoOffset = autoOffset;
+    }
+
+    autoOffset: number = 0;
     axis_scale: any;
     axis: any;
     d3el: any;

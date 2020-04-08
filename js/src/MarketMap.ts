@@ -97,7 +97,7 @@ export class MarketMap extends Figure {
 
         this.title = this.fig.append("text")
           .attr("class", "mainheading")
-          .attrs({x: (0.5 * (this.plotarea_width)), y: -(this.margin.top / 2.0), dy: "1em"})
+          .attrs({x: (0.5 * (this.width)), y: -(this.margin.top / 2.0), dy: "1em"})
           .text(this.model.get("title"));
         this.title.styles(this.model.get("title_style"));
 
@@ -128,10 +128,10 @@ export class MarketMap extends Figure {
     }
 
     update_plotarea_dimensions() {
-        this.plotarea_width = this.width - this.margin.left - this.margin.right;
-        this.plotarea_height = this.height - this.margin.top - this.margin.bottom;
-        this.column_width = parseFloat((this.plotarea_width / this.num_cols).toFixed(2));
-        this.row_height = parseFloat((this.plotarea_height / this.num_rows).toFixed(2));
+        this.width = this.width - this.margin.left - this.margin.right;
+        this.height = this.height - this.margin.top - this.margin.bottom;
+        this.column_width = parseFloat((this.width / this.num_cols).toFixed(2));
+        this.row_height = parseFloat((this.height / this.num_rows).toFixed(2));
     }
 
     reset_drawing_controls() {
@@ -198,7 +198,7 @@ export class MarketMap extends Figure {
             that.fig.attr("transform", "translate(" + that.margin.left + "," +
                                                       that.margin.top + ")");
             that.title.attrs({
-                x: (0.5 * (that.plotarea_width)),
+                x: (0.5 * (that.width)),
                 y: -(that.margin.top / 2.0),
                 dy: "1em"
             });

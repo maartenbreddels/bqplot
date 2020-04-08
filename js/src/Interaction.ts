@@ -34,12 +34,8 @@ export class Interaction extends widgets.WidgetView {
         this.d3el
             .attr("x", 0)
             .attr("y", 0)
-            .attr("width", this.parent.width -
-                           this.parent.margin.left -
-                           this.parent.margin.right)
-            .attr("height", this.parent.height -
-                            this.parent.margin.top -
-                            this.parent.margin.bottom)
+            .attr("width", this.parent.width)
+            .attr("height", this.parent.height)
             .attr("pointer-events", "all")
             .attr("visibility", "hidden");
         this.parent.on("margin_updated", this.relayout, this);
@@ -48,12 +44,8 @@ export class Interaction extends widgets.WidgetView {
     relayout() {
         // Called when the figure margins are updated.
         this.d3el
-            .attr("width", this.parent.width -
-                           this.parent.margin.left -
-                           this.parent.margin.right)
-            .attr("height", this.parent.height -
-                            this.parent.margin.top -
-                            this.parent.margin.bottom);
+            .attr("width", this.parent.width)
+            .attr("height", this.parent.height);
     }
 
     remove() {

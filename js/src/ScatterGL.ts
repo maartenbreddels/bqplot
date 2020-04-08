@@ -445,9 +445,9 @@ export class ScatterGL extends Mark {
         })
 
         this.camera.left  = 0;
-        this.camera.right = fig.plotarea_width;
+        this.camera.right = fig.width;
         this.camera.bottom = 0;
-        this.camera.top = fig.plotarea_height;
+        this.camera.top = fig.height;
         this.camera.updateProjectionMatrix();
 
         this.scatter_material.uniforms['range_x'].value = range_x;

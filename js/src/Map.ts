@@ -27,8 +27,8 @@ export class Map extends Mark {
 
         this.map = this.d3el.append("svg")
             .attr("viewBox", "0 0 1200 980");
-        this.width = this.parent.plotarea_width;
-        this.height = this.parent.plotarea_height;
+        this.width = this.parent.width;
+        this.height = this.parent.height;
         this.map_id = widgets.uuid();
         this.enable_hover = this.model.get("enable_hover");
         this.display_el_classes = ["event_layer"];

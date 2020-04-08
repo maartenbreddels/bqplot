@@ -30,7 +30,6 @@ class ColorBar extends Axis {
         this.bar_height = 20;
         this.d3el.attr("class", "ColorBar")
             .attr("display", (this.model.get("visible") ? "inline" : "none"))
-            .attr("transform", this.get_topg_transform());
 
         this.ordinal = false;
         this.num_ticks = this.model.get("num_ticks");
@@ -224,17 +223,16 @@ class ColorBar extends Axis {
     }
 
     get_topg_transform() {
-        const em = 12;
         if(this.vertical){
             if(this.side === "right") {
-                return "translate(" + String(this.get_basic_transform() + this.margin.right / 2 - this.bar_height) + ", 0)";
+                return "translate(" + String(this.parent.width + this.autoOffset) + ", 0)";
             }
-                return "translate(" + String(this.get_basic_transform() - this.margin.left / 2 + this.bar_height) + ", 0)";
+                return "translate(" + String(- this.bar_height - this.autoOffset) + ", 0)";
         } else {
             if(this.side === "top") {
-                return "translate(0, " + String(this.get_basic_transform() - this.margin.top + this.bar_height + 2 * em) + ")";
+                return "translate(0, " + String(-this.bar_height - this.autoOffset) + ")";
             }
-            return "translate(0, " + String(this.get_basic_transform() + this.margin.bottom - this.bar_height - 2 * em) + ")";
+            return "translate(0, " + String(this.parent.height + this.autoOffset) + ")";
         }
     }
 
@@ -361,6 +359,19 @@ class ColorBar extends Axis {
     redraw_axis() {
         this.draw_color_bar();
         this.redraw_axisline();
+    }
+
+    calculateAutoSize() {
+        const box = this.g_axisline.node().getBoundingClientRect();
+        const side = this.model.get('side');
+        if ((side == 'left') || (side == 'right')) {
+            return box.width + this.bar_height;
+        }
+        if ((side == 'bottom') || (side == 'top')) {
+            return box.height + this.bar_height;
+        }
+        const axisWidth = this.g_axisline.node().getBoundingClientRect().width
+        return this.bar_height + axisWidth;
     }
 
     axis_line_scale: any;

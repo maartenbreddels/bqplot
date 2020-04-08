@@ -34,8 +34,8 @@ export abstract class BaseSelector extends Interaction {
 
     render() {
         this.parent = this.options.parent;
-        this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
-        this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
+        this.width = this.parent.width;
+        this.height = this.parent.height
         this.mark_views_promise = this.populate_mark_views();
     }
 
@@ -47,8 +47,8 @@ export abstract class BaseSelector extends Interaction {
     }
 
     relayout() {
-        this.height = this.parent.height - this.parent.margin.top - this.parent.margin.bottom;
-        this.width = this.parent.width - this.parent.margin.left - this.parent.margin.right;
+        this.height = this.parent.height;
+        this.width = this.parent.width;
     }
 
     async populate_mark_views() {
