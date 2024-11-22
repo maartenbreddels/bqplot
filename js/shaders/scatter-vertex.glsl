@@ -1,3 +1,5 @@
+precision highp float;
+precision highp int;
 #include <scales>
 
 uniform mat4 projectionMatrix;
@@ -48,16 +50,14 @@ uniform vec4 unhovered_stroke;
 uniform bool has_unhovered_opacity;
 uniform float unhovered_opacity;
 
-uniform vec2 domain_x;
-uniform vec2 domain_y;
-uniform vec2 domain_z;
-uniform vec2 domain_size;
-uniform vec2 domain_rotation;
-uniform vec2 domain_opacity;
+uniform vec3 domain_x;
+uniform vec3 domain_y;
+uniform vec3 domain_size;
+uniform vec3 domain_rotation;
+uniform vec3 domain_opacity;
 
 uniform vec2 range_x;
 uniform vec2 range_y;
-uniform vec2 range_z;
 uniform vec2 range_size;
 uniform vec2 range_rotation;
 uniform vec2 range_opacity;
@@ -93,7 +93,7 @@ attribute float opacity_previous;
 attribute float selected;
 
 uniform sampler2D colormap;
-uniform vec2 domain_color;
+uniform vec3 domain_color;
 
 #ifdef USE_COLORMAP
 attribute float color;

@@ -32,6 +32,14 @@ type TypedArray =
   | Float32Array
   | Float64Array;
 
+// TODO Support ordinal scales?
+const scaleTypeMap = {
+  // Linear scales
+  date: 1,
+  linear: 1,
+  // Log scales
+  log: 2,
+};  
 const bqSymbol = markers.symbol;
 
 const to_float_array = function (value: any) {
@@ -174,16 +182,15 @@ export class ScatterGL extends Mark {
     // Create material for markers
     this.scatter_material = new THREE.RawShaderMaterial({
       uniforms: {
-        domain_x: { type: '2f', value: [0, 10] },
-        domain_y: { type: '2f', value: [-12, 12] },
-        domain_z: { type: '2f', value: [0, 1] },
-        domain_size: { type: '2f', value: [0, 1] },
-        domain_color: { type: '2f', value: [0, 1] },
-        domain_rotation: { type: '2f', value: [0, 180] },
-        domain_opacity: { type: '2f', value: [0, 1] },
+        // 3rd element is delta
+        domain_x: { type: '3f', value: [0, 10, 10] },
+        domain_y: { type: '3f', value: [-12, 12, 24] },
+        domain_size: { type: '3f', value: [0, 1, 1] },
+        domain_color: { type: '3f', value: [0, 1, 1] },
+        domain_rotation: { type: '3f', value: [0, 180, 180] },
+        domain_opacity: { type: '3f', value: [0, 1, 1] },
         range_x: { type: '2f', value: [0, 1] },
         range_y: { type: '2f', value: [0, 1] },
-        range_z: { type: '2f', value: [0, 1] },
         range_size: { type: '2f', value: [0, 1] },
         range_rotation: { type: '2f', value: [0, Math.PI] },
         range_opacity: { type: '2f', value: [0, 1] },
@@ -555,32 +562,39 @@ export class ScatterGL extends Mark {
 
     this.scatter_material.uniforms['range_x'].value = range_x;
     this.scatter_material.uniforms['range_y'].value = [range_y[1], range_y[0]]; // flipped coordinates in WebGL
-    this.scatter_material.uniforms['domain_x'].value = x_scale.scale.domain();
-    this.scatter_material.uniforms['domain_y'].value = y_scale.scale.domain();
+    function domain_with_delta(scale) {
+      const domain = scale.scale.domain();
+      let delta = domain[1] - domain[0];
+      if(scale.type == 'log') {
+        delta = Math.log10(domain[1]) - Math.log10(domain[0]);
+      }
+      console.error("[domain[0], domain[1], delta]", [domain[0], domain[1], delta])
+      return [domain[0], domain[1], delta];
+    }
+
+    this.scatter_material.uniforms['domain_x'].value = domain_with_delta(x_scale)
+    this.scatter_material.uniforms['domain_y'].value = domain_with_delta(y_scale);
 
     if (this.scales.size) {
       this.scatter_material.uniforms['range_size'].value =
         this.scales.size.scale.range();
-      this.scatter_material.uniforms['domain_size'].value =
-        this.scales.size.scale.domain();
+      this.scatter_material.uniforms['domain_size'].value = domain_with_delta(this.scales.size);
     } else {
       const size = this.model.get('default_size');
       this.scatter_material.uniforms['range_size'].value = [0, size];
-      this.scatter_material.uniforms['domain_size'].value = [0, size];
+      this.scatter_material.uniforms['domain_size'].value = [0, size, size];
     }
 
     if (this.scales.rotation) {
       this.scatter_material.uniforms['range_rotation'].value =
         this.scales.rotation.scale.range();
-      this.scatter_material.uniforms['domain_rotation'].value =
-        this.scales.rotation.scale.domain();
+      this.scatter_material.uniforms['domain_rotation'].value = domain_with_delta(this.scales.rotation);
     }
 
     if (this.scales.opacity) {
       this.scatter_material.uniforms['range_opacity'].value =
         this.scales.opacity.scale.range();
-      this.scatter_material.uniforms['domain_opacity'].value =
-        this.scales.opacity.scale.domain();
+      this.scatter_material.uniforms['domain_opacity'].value = domain_with_delta(this.scales.opacity);
     }
 
     const renderer = fig.renderer;
@@ -994,7 +1008,7 @@ export class ScatterGL extends Mark {
         } else {
           max = Math.max(...color);
         }
-        this.scatter_material.uniforms['domain_color'].value = [min, max];
+        this.scatter_material.uniforms['domain_color'].value = [min, max, max - min];
       } else {
         if (
           this.scales.color.model.min !== null &&
@@ -1003,6 +1017,7 @@ export class ScatterGL extends Mark {
           this.scatter_material.uniforms['domain_color'].value = [
             this.scales.color.model.min,
             this.scales.color.model.max,
+            this.scales.color.model.max - this.scales.color.model.min,
           ];
         } else {
           console.warn(
@@ -1095,14 +1110,6 @@ export class ScatterGL extends Mark {
       this.y_scale = this.parent.scale_y;
     }
 
-    // TODO Support ordinal scales?
-    const scaleTypeMap = {
-      // Linear scales
-      date: 1,
-      linear: 1,
-      // Log scales
-      log: 2,
-    };
     this.scatter_material.defines[`SCALE_TYPE_x`] =
       scaleTypeMap[this.x_scale.model.type];
     this.scatter_material.defines[`SCALE_TYPE_y`] =
